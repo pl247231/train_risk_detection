@@ -35,7 +35,7 @@ while cap.isOpened():
         length = math.sqrt((l[0] - l[2])**2 + (l[1] - l[3])**2)
 
         if n % 3 == 0:
-            if(abs(l[0] + 150 - 720) > 1920/2):
+            if(abs(l[0] + 400 - 720) > 1920/2):
                 previous = (0, 0, 255)
                 cv.circle(img, (1800, 100), 50, previous, -1)
             else:
