@@ -6,6 +6,7 @@ cv.namedWindow("Resized_Window", cv.WINDOW_NORMAL)
 cv.resizeWindow("Resized_Window", 1920, 540)
 previous = (0,255,0)
 n = 0
+direction = True
 #out = cv.VideoWriter('C:/Users/kaiyu/PycharmProjects/train/detected.mp4', cv.VideoWriter_fourcc('m','p','4','v'), 30, (1920, 1080))
 while cap.isOpened():
     ret, frame = cap.read()
@@ -25,32 +26,36 @@ while cap.isOpened():
 
     #cv.circle(img, (720, 800), 20, (0, 255, 0), -1)
     #cv.line(img, (1200,0), (1200, 1079), (0,255,0), 10)
-    #cv.line(img, (400, 0), (400, 1079), (0, 255, 0), 10)
-    #cv.line(img, (0, 800), (1920, 800), (0, 255, 0), 10)
-    crop_img = full_mask[0:800, 400:720]
-    line1 = cv.HoughLinesP(crop_img, 1, np.pi / 180, threshold=20, minLineLength=100, maxLineGap=70)
+    #cv.line(img, (150, 0), (150, 1079), (0, 255, 0), 10)
+    crop_img = full_mask[0:1079, 150:1200]
+    line1 = cv.HoughLinesP(crop_img, 1, np.pi / 180, threshold=20, minLineLength=100, maxLineGap=50)
+
     if line1 is not None:
         l = line1[0][0]
-        #cv.line(img, (l[0]+400, l[1]), (l[2]+400, l[3]), (0, 255, 0), 10, cv.LINE_AA)
-        length = math.sqrt((l[0] - l[2])**2 + (l[1] - l[3])**2)
-
-        if n % 3 == 0:
-            if(abs(l[0] + 400 - 720) > 1920/2):
+        #cv.line(img, (l[0]+150, l[1]), (l[2]+150, l[3]), (0, 255, 0), 10, cv.LINE_AA)
+        length = math.sqrt((l[0] - l[3])**2 + (l[1] - l[3])**2)
+        if (l[0] + 150 > 720):
+            direction = False
+        else:
+            direction = True
+        if n % 4 == 0:
+            if(abs(l[0] + 150 - 720) > 1920/2):
                 previous = (0, 0, 255)
                 cv.circle(img, (1800, 100), 50, previous, -1)
-            else:
-                if abs(l[0] - l[2])/length > 0.58 and abs(l[0] - l[2])/length < 0.71:
+            elif direction:
+                if length > 620 and length < 710:
                     previous = (0,255,0)
                     cv.circle(img, (1800, 100), 50, previous, -1)
                 else:
                     previous = (0, 255, 255)
                     cv.circle(img, (1800, 100), 50, previous, -1)
-                #cv.putText(img, str(abs(l[0] - l[2]) / length), (100, 150), cv.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 3, cv.LINE_AA)
+            else:
+                previous = (0, 255, 0)
+                cv.circle(img, (1800, 100), 50, previous, -1)
         else:
             cv.circle(img, (1800, 100), 50, previous, -1)
-
     else:
-        cv.circle(img, (1800, 100), 50, (0,255,0), -1)
+        cv.circle(img, (1800, 100), 50, previous, -1)
     n+= 1
     cv.putText(img, "Frame:" + str(n), (100, 150), cv.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 3, cv.LINE_AA)
     #out.write(img)
